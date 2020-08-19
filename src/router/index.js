@@ -6,6 +6,12 @@ import Login from '../components/Login.vue'
 import Home from '../components/Home.vue'
 import Welcome from '../components/Welcome.vue'
 import _401 from '../components/401.vue'
+import AttachMents from '../components/attachments/AttachMents.vue'
+import Department from '../components/department/Department.vue'
+import Roles from "../components/roles/Roles"
+import Users from '../components/users/Users.vue'
+import RoleMenus from "../components/rolemenu/roleMenus.vue";
+
 
 Vue.use(VueRouter)
 
@@ -23,6 +29,7 @@ Vue.use(VueRouter)
       path: '/home',
       name: 'Home',
       component: Home,
+      redirect:'/welcome',
       meta:{title: '首页'},
       children: [
         {
@@ -32,6 +39,26 @@ Vue.use(VueRouter)
         {
           path: '/401',
           component: _401
+        },
+        {
+          path: '/attachments',
+          component: AttachMents
+        },
+        {
+          path: '/department',
+          component: Department
+        },
+        {
+          path: '/roles',
+          component: Roles
+        },
+        {
+          path: '/users',
+          component: Users
+        },
+        {
+          path: '/menus',
+          component: RoleMenus
         }
       ]
     }
@@ -81,5 +108,10 @@ const token = window.localStorage.getItem('JWT_TOKEN');
     }
   }
 })
+
+const originalPush = VueRouter.prototype.push
+   VueRouter.prototype.push = function push(location) {
+   return originalPush.call(this, location).catch(err => err)
+}
 
 export default router

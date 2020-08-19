@@ -1,6 +1,7 @@
 <template>
-  <el-container class="container">
-    <el-header class="header">
+  <el-container class="home-container">
+    <!-- 头部 -->
+    <el-header>
       <div class="logo">
         <img src="~@/assets/img/ilogo.png" alt="">
       </div>
@@ -16,47 +17,34 @@
     </el-header>
 
     <el-container>
-    <!-- 菜单 -->
-      <el-aside :width="this.isOpen==true?'64px':'200px'" class="aside">
+    <!-- 侧边菜单 -->
+      <el-aside :width="this.isOpen==true?'64px':'200px'">
         <div class="toggle-btn" @click="toggleMenu">|||</div>
-          <el-menu
-            class="el-menu-vertical-demo"
-            background-color="#272c33"
-            text-color="rgba(255,255,255,0.7)"
-            :collapse="isOpen"
-            :collapse-transition="false"
-            active-text-color="#ffd04b"
-            unique-opened
-            >
-            <template v-for="item in this.menuList">
-              <el-submenu index="1" :key="item.id+''">
-                <template slot="title">
-                  <i :class="item.icon"></i>
-                  <span>{{item.menuName}}</span>
-                </template>
-                <el-menu-item-group v-for="(item,index) in item.children" :key="index">
-                  <el-menu-item index="1-1">{{item.menuName}}</el-menu-item>
-                </el-menu-item-group>
-              </el-submenu>
-            </template>
-            
-          </el-menu>
+        <home-menu :menuList='menuList' :isOpen='isOpen'></home-menu>
       </el-aside>
+
+      <!-- 主体部分 -->
       <el-main>
-        {{this.menuList}}
+        <router-view></router-view>
       </el-main>
     </el-container>
   </el-container>
 </template>
 
 <script>
+import HomeMenu from './menu/Menu'
+
 export default {
   name: 'Home',
+  components: {
+    HomeMenu
+  },
   data() {
     return {
-      menuList: {},
+      menuList: [],
       userInfo: {},
-      isOpen: false
+      isOpen: false,
+      activePath: ''
     }
   },
   methods: {
@@ -88,20 +76,21 @@ export default {
     }
   },
   created() {
-    this.userInfo = this.$store.state.userInfo;
+    this.userInfo = this.$store.getters.getUserInfo
     this.getMenuList()
+    this.activePath = window.sessionStorage.getItem('activePath')
   }
     
 };
 </script>
 
 <style scoped>
-.container {
+.home-container {
   width: 100vw;
   height: 100vh;
 }
 
-.header {
+.el-header {
   display: flex;
   justify-content: space-between;
   height: 60px;
@@ -116,10 +105,14 @@ export default {
   margin-top: 5px;
 }
 
-.aside {
-  /* height: calc(100% - 60px); */
-  height: 100%;
+.el-aside {
+  height: calc(100vh - 60px);
+  /* height: 100%; */
   background-color: #272c33;
+}
+
+.el-menu {
+  border-right: 0;
 }
 
 .toggle-btn {
@@ -130,5 +123,10 @@ export default {
   text-align: center;
   letter-spacing: 0.2em;
   cursor: pointer;
+}
+
+.el-main {
+  background-color: #fff;
+  height: calc(100vh - 60px);
 }
 </style>

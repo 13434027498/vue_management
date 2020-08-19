@@ -12,6 +12,9 @@ Vue.use(ElementUI)
 
 // 线上的API接口
 axios.defaults.baseURL = "https://www.zykhome.club/api/"
+axios.defaults.timeout = 5000
+
+// axios.defaults.baseURL = 'http://www.localhost:8081/'
 
 /**
  *  axios请求拦截器
@@ -20,9 +23,9 @@ axios.interceptors.request.use(config => {
   // NProgress.start() // 设置加载进度条(开始..)
   config.headers.Authorization = window.localStorage.getItem('JWT_TOKEN');
   return config;
-}
-  , error => {
-    return Promise.reject(error)
+},
+  error => {
+  return Promise.reject(error)
   });
 
 
@@ -38,7 +41,7 @@ axios.interceptors.response.use(
       // vm.$message.error("您的登入状态已失效,请您重新登入~")
       return router.push("/login");
     }else {
-        return response;
+      return response;
     }
   },
   function (error) {

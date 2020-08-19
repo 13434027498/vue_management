@@ -46,7 +46,7 @@ export default {
   data() {
     return {
       userLoginForm: {
-        username: "asdfg",
+        username: "jack",
         password: "123456"
       },
       loading: false,
@@ -94,7 +94,7 @@ export default {
         })
         //保存token
         localStorage.setItem("JWT_TOKEN", res.data);
-        this.getUserInfo();
+        this.getUserInfo()
       } else {
         this.$message.error({
           title: "登入失败",
@@ -111,7 +111,7 @@ export default {
       }
       // this.userInfo = res.data;
       console.log(res.data);
-      this.$store.commit("setUserInfo",res.data);
+      this.$store.commit("setUserInfo",res.data)
       this.$router.push('/home')
     }
   }
