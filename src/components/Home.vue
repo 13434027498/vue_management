@@ -88,6 +88,7 @@ export default {
 .home-container {
   width: 100vw;
   height: 100vh;
+  min-width: 1033px;
 }
 
 .el-header {

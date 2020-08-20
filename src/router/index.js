@@ -45,7 +45,7 @@ Vue.use(VueRouter)
           component: AttachMents
         },
         {
-          path: '/department',
+          path: '/departments',
           component: Department
         },
         {

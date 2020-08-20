@@ -97,7 +97,7 @@
       ></el-pagination>
 
       <!-- 添加用户框 -->
-      <el-dialog title="添加用户" @close="closeDialog" :visible.sync="dialogVisible" width="50%">
+      <el-dialog title="添加用户" @close="closeDialog" :visible.sync="dialogVisible" width="580px">
         <el-form
           :model="addForm"
           :rules="addFormRules"
@@ -106,7 +106,7 @@
           label-width="80px"
         >
           <el-row>
-            <el-col :span="10">
+            <el-col :span="11">
               <el-form-item label="用户名" prop="username">
                 <el-input v-model="addForm.username"></el-input>
               </el-form-item>
