@@ -12,7 +12,7 @@ Vue.use(ElementUI)
 
 // 线上的API接口
 axios.defaults.baseURL = "https://www.zykhome.club/api/"
-axios.defaults.timeout = 5000
+axios.defaults.timeout = 10000
 
 // axios.defaults.baseURL = 'http://www.localhost:8081/'
 
