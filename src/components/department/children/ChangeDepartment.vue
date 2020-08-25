@@ -1,5 +1,5 @@
 <template>
-  <el-dialog title="添加部门" width="450px" :visible.sync="dialogFormVisible" :before-close="InShow">
+  <el-dialog title="部门信息修改" width="450px" :visible.sync="dialogFormVisible" :before-close="InShow">
     <el-form
       label-width="80px"
       ref="changeDepartmentFormRef"
