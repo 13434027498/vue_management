@@ -64,7 +64,7 @@
             <el-tag size="mini" type="warning" v-else>女</el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="departmentName" label="所属部门" width="100px"></el-table-column>
+        <el-table-column prop="departmentName" label="所属部门" width="80px"></el-table-column>
         <el-table-column prop="email" label="邮箱"></el-table-column>
         <el-table-column prop="phoneNumber" label="联系方式"></el-table-column>
         <el-table-column prop="isban" label="是否禁用" width="80px">
@@ -75,13 +75,10 @@
         <el-table-column label="操作" width="175px">
           <template slot-scope="scope">
             <el-button type="primary" size="mini" icon="el-icon-edit-outline"></el-button>
-            <el-button
-              type="danger"
-              size="mini"
-              icon="el-icon-delete"
-              @click="del(scope.row.id)"
-            ></el-button>
-            <el-button type="warning" size="mini" icon="el-icon-s-tools"></el-button>
+            <el-button type="danger" size="mini" icon="el-icon-delete" @click="del(scope.row.id)"></el-button>
+            <el-tooltip effect="dark" :enterable="false" content="分配角色" placement="top">
+              <el-button type="warning" size="mini" icon="el-icon-s-tools" @click="showAssignRoles(scope.row.id)"></el-button>
+            </el-tooltip>
           </template>
         </el-table-column>
       </el-table>
@@ -164,13 +161,20 @@
           <el-button type="primary" @click="addUser">确 定</el-button>
         </span>
       </el-dialog>
+
+      <!-- 编辑用户角色 -->
+      <assign-roles ref="assignRolesRef"></assign-roles>
     </el-card>
   </div>
 </template>
 
 <script>
+import AssignRoles from "./children/assignRoles";
 export default {
   name: "",
+  components: {
+    AssignRoles
+  },
   data() {
     // 自定义验证规则需要定义在return前
     // email验证规则
@@ -372,9 +376,10 @@ export default {
         }
       });
     },
+    // 删除用户
     async del(userId) {
       const confirmResult = await this.$confirm(
-        "此操作将永久删除该文件, 是否继续?",
+        "此操作将永久删除该用户, 是否继续?",
         "提示",
         {
           confirmButtonText: "确定",
@@ -394,14 +399,19 @@ export default {
           this.$message.success({
             title: "操作成功",
             message: "用户删除成功",
-          })
-          this.getUserList()
+          });
+          this.getUserList();
         } else {
-          this.$message.error(res.msg)
+          this.$message.error(res.msg);
         }
       }
       console.log(userId);
     },
+    // 编辑用户角色
+    showAssignRoles(userId) {
+      this.$refs.assignRolesRef.assignRoles(userId)
+      console.log(userId);
+    }
   },
   created() {
     this.getDepartments();
