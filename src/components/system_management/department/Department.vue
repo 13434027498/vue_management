@@ -51,7 +51,7 @@
         :pageNum="queryMap.pageNum"
         :pageSize="queryMap.pageSize"
         :total="departmentData.total"
-        :pageSizes="[this.queryMap.pageSize,7,10,15]"
+        :pageSizes="[5,7,10,15]"
       ></page-ination>
       <!-- 添加部门 -->
       <add-department
@@ -76,6 +76,7 @@
 import PageInation from "@/components/common/pagination/Pagination.vue";
 import AddDepartment from "./children//AddDepartment.vue";
 import ChangeDepartment from "./children/ChangeDepartment";
+import { department } from "@/network/index";
 export default {
   name: "",
   components: {
@@ -103,43 +104,24 @@ export default {
     },
     // 获取部门信息列表
     async getDepartmentList() {
-      const { data: res } = await this.$http.get(
-        "department/findDepartmentList",
-        {
-          params: this.queryMap,
-        }
-      );
-
-      if (res.code !== 200) {
-        return this.$message.error("获取部门列表失败");
-      }
-
+      const res = await department.getDepartmentList(this.queryMap);
       this.departmentData = res.data;
     },
     // 获取部门主任列表
     async getDeanList() {
-      // const res = this.$http.get('department/findDeanList');
-      // console.log(res); 返回promise
-
-      const { data: res } = await this.$http.get("department/findDeanList");
-      if (res.code !== 200) {
-        this.$message.error("获取部门主任列表失败");
-      }
+      const res = await department.getDeanList();
       this.deans = res.data;
     },
     // 获取部门修改原数据
     async edit(id) {
-      const { data: res } = await this.$http.get("department/edit/" + id);
-      if (res.code !== 200) {
-        return this.$message.error("获取部门编辑信息失败" + res.msg);
-      }
+      const res = await department.getDepartmentEdit(id);
       this.editDepartmentFrom = res.data;
       console.log(this.editDepartmentFrom);
       this.editDialogFormVisible = true;
     },
     // 删除部门
     async del(id) {
-      let resConfirm =await this.$confirm(
+      let resConfirm = await this.$confirm(
         "此操作将永久删除该部门, 是否继续?",
         "提示",
         {
@@ -154,14 +136,11 @@ export default {
         });
       });
       if (resConfirm == "confirm") {
-        const { data: res } = await this.$http.delete(
-          "department/delete/" + id
-        );
-        if (res.code !== 200) {
-          return this.$message.error("部门删除失败" + res.msg);
+        const res = await department.delDepartment(id);
+        if (res.code == 200) {
+          this.$message.success("部门删除成功");
+          this.getDepartmentList();
         }
-        this.$message.success("部门删除成功");
-        this.getDepartmentList();
       }
     },
     // 添加部门

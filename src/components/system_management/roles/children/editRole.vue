@@ -19,6 +19,7 @@
 </template>
 
 <script>
+import { role,menu } from "@/network/index";
 export default {
   name: "",
   data() {
@@ -40,7 +41,7 @@ export default {
   methods: {
     // 获取权限树信息
     async getMenuTree() {
-      const { data: res } = await this.$http.get("menu/tree");
+      const res = await menu.getMenuTree()
       if (res.code == 200) {
         this.data = res.data.tree;
         this.open = res.data.open;
@@ -48,7 +49,8 @@ export default {
     },
     // 获取角色对应权限列表
     async grant(id) {
-      const { data: res } = await this.$http.get("role/findRoleMenu/" + id);
+      this.dialogVisible = true
+      const res = await role.getGrantRole(id)
       if (res.code == 200) {
         res.data.mids.forEach((value) => {
           this.$refs.tree.setChecked(value, true);
@@ -57,19 +59,17 @@ export default {
     },
     // 权限修改
     async authority() {
-      const { data: res } = await this.$http.post(
-        "role/authority/" + this.Id,
+      const res = await role.authority(
+        this.Id,
         [].concat(
           this.$refs.tree.getCheckedKeys(),
           this.$refs.tree.getHalfCheckedKeys()
         )
       );
-      this.dialogVisible = false
-      if (res.code !== 200) {
-        return this.$message.error("修改失败: " + res.msg);
+      this.dialogVisible = false;
+      if (res.code == 200) {
+        this.$message.success("权限修改完成");
       }
-      this.$message.success("权限修改完成")
-      
     },
     closeAll() {
       this.$refs.tree.getCheckedNodes().forEach((value) => {

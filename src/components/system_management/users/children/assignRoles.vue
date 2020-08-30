@@ -16,6 +16,7 @@
 </template>
 
 <script>
+import { user } from "@/network/index";
 export default {
   name: "",
   data() {
@@ -29,26 +30,19 @@ export default {
   methods: {
     // 获取分配角色信息
     async assignRoles(id) {
-      const { data: res } = await this.$http.get("user/" + id + "/roles");
+      const res = await user.assignRoles(id);
       this.dialogVisible = true;
-      if (res.code !== 200) {
-        return this.$message.error(res.msg);
-      }
       this.roles = res.data.roles;
       this.value = res.data.values;
       this.uid = id;
     },
     // 确定角色分配
     async doAssignRoles() {
-      const { data: res } = await this.$http.post(
-        "user/" + this.uid + "/assignRoles",
-        this.value
-      );
+      const res = await user.doAssignRoles(this.uid, this.value);
       this.dialogVisible = false;
-      if (res.code !== 200) {
-        return this.$message.error("角色分配失败: " + res.msg);
+      if (res.code == 200) {
+        this.$message.success("角色分配成功");
       }
-      this.$message.success("角色分配成功");
     },
   },
 };

@@ -48,6 +48,7 @@
 <script>
 import PageInation from "@/components/common/pagination/Pagination.vue";
 import EditRole from "./children/editRole";
+import {role} from "@/network/index"
 export default {
   name: "",
   components: {
@@ -69,12 +70,7 @@ export default {
   methods: {
     // 获取角色列表信息
     async getRoleData() {
-      const { data: res } = await this.$http.get("role/findRoleList", {
-        params: this.queryMap,
-      });
-      if (res.code !== 200) {
-        return this.$message.error("获取角色列表失败");
-      }
+      const res = await role.getRoleData(this.queryMap)
       this.roleData = res.data.rows;
       this.total = res.data.total;
     },
@@ -82,7 +78,6 @@ export default {
     showEditRole(id) {
       this.grantId = id
       this.$refs.editRoleRef.grant(this.grantId)
-      this.$refs.editRoleRef.dialogVisible = true;
     },
     // 分页数据修改
     pageSizeChange(newSize) {

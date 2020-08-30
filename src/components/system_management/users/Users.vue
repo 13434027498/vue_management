@@ -169,6 +169,7 @@
 </template>
 
 <script>
+import {department,user} from '@/network/index'
 import AssignRoles from "./children/assignRoles";
 export default {
   name: "",
@@ -287,22 +288,16 @@ export default {
   },
   methods: {
     // 获取部门信息
-    async getDepartments() {
-      const { data: res } = await this.$http.get("department/findAll");
-      if (res.code !== 200) {
-        return this.$message.error("获取部门列表失败！");
-      }
-      this.departments = res.data;
+    getDepartments() {
+      department.findAll().then((res) => {
+        this.departments = res.data;
+      });
     },
     // 获取用户信息
-    async getUserList() {
-      const { data: res } = await this.$http.get("user/findUserList", {
-        params: this.queryMap,
+    getUserList() {
+      user.getUserList(this.queryMap).then((res) => {
+        this.userList = res.data;
       });
-      if (res.code !== 200) {
-        return this.$message.error("获取用户列表失败！");
-      }
-      this.userList = res.data;
     },
     // 表单查询
     searchUser() {
@@ -330,22 +325,6 @@ export default {
       this.queryMap.pageNum = current;
       this.getUserList();
     },
-    // 改变用户状态
-    async changeUserStatus(row) {
-      const { data: res } = await this.$http.put(
-        "user/updateStatus/" + row.id + "/" + row.status
-      );
-      if (res.code !== 200) {
-        this.$message.error("更新用户状态失败:" + res.msg);
-        row.status = !row.status;
-      } else {
-        let message = row.status ? "用户状态已禁用" : "用户状态已启用";
-        this.$message.success({
-          title: "操作成功",
-          message: message,
-        });
-      }
-    },
     // 关闭对话框
     closeDialog() {
       // 清除验证
@@ -354,25 +333,24 @@ export default {
       this.$refs.addFormRef.resetFields();
     },
     // 添加用户
-    async addUser() {
-      this.$refs.addFormRef.validate(async (valid) => {
+    addUser() {
+      this.$refs.addFormRef.validate((valid) => {
         if (!valid) {
           return;
         } else {
           this.btnDisabled = true;
-          const { data: res } = await this.$http.post("user/add", this.addForm);
-          if (res.code == 200) {
-            this.$message.success({
-              title: "操作成功",
-              message: "用户添加成功",
-            });
+          console.log(this.addForm);
+          user.addUser(this.addForm).then((res) => {
+            if (res.code === 200)
+              this.$message.success({
+                title: "操作成功",
+                message: "用户添加成功",
+              });
             this.$refs.addFormRef.resetFields();
-            this.getUserList;
-          } else {
-            return this.$message.error("用户添加失败:" + res.msg);
-          }
-          this.btnDisabled = false;
-          this.addDialogVisible = false;
+            this.getUserList();
+            this.btnDisabled = false;
+            this.dialogVisible = false;
+          });
         }
       });
     },
@@ -394,18 +372,32 @@ export default {
       });
 
       if (confirmResult == "confirm") {
-        const { data: res } = await this.$http.delete("user/delete/" + userId);
+        const res = await user.delUser(userId);
+        console.log(res);
         if (res.code == 200) {
           this.$message.success({
             title: "操作成功",
             message: "用户删除成功",
           });
           this.getUserList();
-        } else {
-          this.$message.error(res.msg);
         }
       }
       console.log(userId);
+    },
+    // 改变用户状态
+    changeUserStatus(row) {
+      user.changeUserStatus(row.id, row.status).then((res) => {
+        console.log(res);
+        if (res.code !== 200) {
+          row.status = !row.status;
+        } else {
+          let message = row.status ? "用户状态已禁用" : "用户状态已启用";
+          this.$message.success({
+            title: "操作成功",
+            message: message,
+          });
+        }
+      });
     },
     // 编辑用户角色
     showAssignRoles(userId) {

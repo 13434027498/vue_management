@@ -29,6 +29,7 @@
 </template>
 
 <script>
+import { department } from "@/network/index";
 export default {
   name: "",
   props: {
@@ -37,7 +38,7 @@ export default {
       default: false,
     },
     deans: Array,
-    changeDepartmentForm:Object
+    changeDepartmentForm: Object,
   },
   data() {
     // 电话号码验证规则
@@ -89,6 +90,7 @@ export default {
   },
   methods: {
     InShow() {
+      this.$refs.changeDepartmentFormRef.clearValidate();
       this.$emit("CloseShow");
     },
     changeDepartment() {
@@ -96,22 +98,20 @@ export default {
         if (!valid) {
           return;
         }
-        const { data: res } = await this.$http.put(
-          "department/update/" + this.changeDepartmentForm.id,
+        const res = await department.changeDepartment(
+          this.changeDepartmentForm.id,
           this.changeDepartmentForm
         );
         console.log(this.changeDepartmentForm);
-        if (res.code !== 200) {
-          return this.$message.error("部门信息更新失败" + res.msg);
+        if (res.code == 200) {
+          this.$message.success("部门更新成功");
+          this.InShow();
+          this.$emit("changeSuccess");
         }
-        this.$message.success("部门更新成功");
-        this.InShow();
-        this.$emit("changeSuccess");
       });
     },
   },
-  created() {
-  },
+  created() {},
 };
 </script>
 

@@ -1,7 +1,7 @@
 <template>
   <div id="login">
-    <el-form 
-      ref="userLoginFormRef" 
+    <el-form
+      ref="userLoginFormRef"
       class="el-form"
       status-icon
       :rules="loginRules"
@@ -10,9 +10,9 @@
       <h1 class="login-title">新冠-物资管理系统</h1>
       <h3>系统登录</h3>
       <el-form-item prop="username">
-        <el-input 
+        <el-input
           type="text"
-          placeholder='请输入账号'
+          placeholder="请输入账号"
           v-model="userLoginForm.username"
           @keyup.enter.native="handleSubmit"
           prefix-icon="iconfont el-icon-user"
@@ -21,14 +21,14 @@
       <el-form-item prop="password">
         <el-input
           type="password"
-          placeholder=' 请输入密码'
+          placeholder=" 请输入密码"
           v-model="userLoginForm.password"
           @keyup.enter.native="handleSubmit"
           prefix-icon="iconfont el-icon-lock"
         ></el-input>
       </el-form-item>
       <el-form-item label-position="right" label-width="200px">
-        <el-button 
+        <el-button
           type="primary"
           @click="handleSubmit"
           :loading="loading"
@@ -41,86 +41,78 @@
 </template>
 
 <script>
+import { user } from "@/network/index";
 export default {
-  name: '',
+  name: "",
   data() {
     return {
       userLoginForm: {
         username: "jack",
-        password: "123456"
+        password: "123456",
       },
       loading: false,
       loginRules: {
         username: [
-          {required: true, message: '请输入用户名', trigger: 'blur'},
-          {min: 3, max: 12, message: "长度在 3 到 12 个字符", trigger: "blur"}
+          { required: true, message: "请输入用户名", trigger: "blur" },
+          {
+            min: 3,
+            max: 12,
+            message: "长度在 3 到 12 个字符",
+            trigger: "blur",
+          },
         ],
         password: [
           { required: true, message: "请输入用户密码", trigger: "blur" },
-          { min: 6, max: 15, message: "长度在 6 到 15 个字符", trigger: "blur" }
-        ]
-      }
-    }
+          {
+            min: 6,
+            max: 15,
+            message: "长度在 6 到 15 个字符",
+            trigger: "blur",
+          },
+        ],
+      },
+    };
   },
   methods: {
     resetForm() {
-      this.$refs.userLoginFormRef.resetFields()
+      this.$refs.userLoginFormRef.resetFields();
     },
     handleSubmit() {
-      this.$refs.userLoginFormRef.validate( valid => {
-        if(!valid) {
+      this.$refs.userLoginFormRef.validate((valid) => {
+        if (!valid) {
           return;
-        }else{
-          this.Login()
+        } else {
+          this.Login();
         }
-      })
+      });
     },
-    async Login() {
+    // 发起登录请求
+    Login() {
       this.loading = true;
-      //发起登入请求
-      const { data: res } = await this.$http.post(
-        // "user/login",this.userLoginForm
-        "user/login?username=" +
-          this.userLoginForm.username +
-          "&password=" +
-          this.userLoginForm.password
-      );
-      console.log(res);
-      if (res.code == 200) {
-        this.$message({
-          title: "登入成功",
-          message: "欢迎你进入系统",
-          type: "success"
-        })
+      user.login(this.userLoginForm).then((res) => {
+        console.log(res.data);
         //保存token
         localStorage.setItem("JWT_TOKEN", res.data);
-        this.getUserInfo()
-      } else {
-        this.$message.error({
-          title: "登入失败",
-          message: res.msg,
-          type: "error"
-        });
-      }
+        // this.$store.commit('saveToken',res.data)
+        this.getUserInfo();
+      });
       this.loading = false;
     },
-    async getUserInfo() {
-      const {data: res} = await this.$http.get("user/info");
-      if(res.code !== 200) {
-        return this.$message.error("获取用户信息失败: " + res.msg)
-      }
-      // this.userInfo = res.data;
-      console.log(res.data);
-      this.$store.commit("setUserInfo",res.data)
-      this.$router.push('/home')
-    }
-  }
-}
-
+    // 获取用户信息
+    getUserInfo() {
+      user.getUserInfo().then((res) => {
+        // this.userInfo = res.data;
+        console.log(res.data);
+        this.$store.commit("setUserInfo", res.data);
+        this.$router.push("/home");
+      });
+    },
+  },
+};
 </script>
 
 <style scoped>
-#login{
+#login {
   height: 100vh;
   display: flex;
   justify-content: center;
